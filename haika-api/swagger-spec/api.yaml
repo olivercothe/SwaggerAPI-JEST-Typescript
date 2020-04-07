@@ -1,0 +1,814 @@
+openapi: 3.0.1
+info:
+  title: Haika APIs
+  description: 'This is the Rest Api Specification for Haika app'
+  termsOfService: ''
+  contact:
+    email: taras0318@outlook.com
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:3000/api/v1'
+tags:
+  - name: auth
+    description: 'This api is Public API, which unauthorized user can access.'
+  - name: admin
+    description: 'Thesse apis are all for admin and private only authorized admin can access.'
+  - name: user
+    description: 'These apis are private, which only authorized user can access.'
+  - name: posts
+    description: 'Operations about posts and private apis which only authorized user can access.'
+  - name: categories
+    description: 'Operations about categories and private apis which only authorized user can access.'
+paths:
+  '/auth/confirm':
+    get:
+      tags:
+        - auth
+      summary: Get auth token
+      description: Get user's token info to indentify user base on email
+      operationId: getToken
+      parameters:
+        - name: user
+          in: query
+          description:  Auth token to indentify user.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      user:
+                        $ref: '#/components/schemas/GetUser'
+                    
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError' 
+  '/admin/users/{user_id}':
+    get:
+      tags:
+        - admin
+      summary: Admin view users by user_id
+      description: View users by user_id
+      operationId: getUsersByUserId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: Id that needs to be fetched user info. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/GetUser'
+                  message:
+                    type: string
+        '400':
+          description: Invalid user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/admin/post/{post_id}':
+    get:
+      tags:
+        - admin
+      summary: Admin view post by post_id
+      description: View post by post_id
+      operationId: getPostByPostId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          description: Id that needs to be fetched post info. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Post'
+                  message:
+                    type: string
+        '400':
+          description: Invalid user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/admin/posts/{user_id}':
+    get:
+      tags:
+        - admin
+      summary:  Admin view posts by user_id
+      description: View posts by user_id
+      operationId: getPostsdByUserId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: Id that needs to be fetched user posts. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  message:
+                    type: string
+        '400':
+          description: Invalid user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError' 
+  '/admin/posts/{user_id}/{category_id}':
+    get:
+      tags:
+        - admin
+      summary: Admin view posts by user_id and category_id
+      description: View posts by user_id and category_id
+      operationId: getPostsByUserIdCategoryId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: Id that needs to be fetched posts by user. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+        - name: category_id
+          in: path
+          description: Id that needs to be fetched posts by cartegory. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  message:
+                    type: string
+        '400':
+          description: Invalid user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError' 
+  '/admin/categories/{user_id}':
+    get:
+      tags:
+        - admin
+      summary: Admin view categories
+      description: View categories of users by user_id
+      operationId: getCategoriesByUserId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: User id that needs to be fetched categores. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  message:
+                    type: string
+        '400':
+          description: Invalid user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError' 
+  '/admin/actions':
+    get:
+      tags:
+        - admin
+      summary: admin action list
+      description: View actions of admin
+      operationId: getAdminActions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdminAction'
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/admin':
+    post:
+      tags:
+        - admin
+      summary: Add a new admin
+      description: Add a new admin
+      operationId: addAdmin
+      requestBody:
+        description: Admin object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      token: 
+                        type: string
+                  message:
+                    type: string
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '405':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+      x-codegen-request-body-name: body
+  '/user':
+    get:
+      tags:
+        - user
+      summary: View user info
+      description: View user info
+      operationId: getUserInfo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/GetUser'
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '500':
+          $ref: '#/components/responses/ServerError' 
+    put:
+      tags:
+        - user
+      summary: User profile editor
+      description: Update an existing user profile
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: User object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+      x-codegen-request-body-name: body
+    post:
+      tags:
+        - user
+      summary: Add a new user
+      description: Add a new user
+      operationId: addUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: User object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      token: 
+                        type: string
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken'        
+        '404':
+          $ref: '#/components/responses/NotFound' 
+        '405':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+      x-codegen-request-body-name: body
+  '/posts':
+    get:
+      tags:
+        - posts
+      summary: User view posts
+      description: View post by user id
+      operationId: getPostsByUserId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: 'user id that needs to be fetched. Use XXXX for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  message:
+                    type: string           
+        '400':
+          description: Invalid post id
+          content: {}
+        '401':
+          $ref: '#/components/responses/InvalidToken' 
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+  '/post/{post_id}':
+    put:
+      tags:
+        - posts
+      summary: Update user post
+      description: Update post by user id
+      operationId: updatePost
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          description: 'Pointed post id. Use XXXX for testing. '
+          required: true
+          schema:
+            type: string    
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  message:
+                    type: string
+        '400':
+          description: Invalid post id
+          content: {}
+        '401':
+          $ref: '#/components/responses/InvalidToken' 
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+  '/post':
+    post:
+      tags:
+        - posts
+      summary: Add user post
+      description: Add new post 
+      operationId: addPost
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Post object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPost'
+        required: true    
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  message:
+                    type: string         
+        '400':
+          description: Invalid post id
+          content: {}      
+        '401':
+          $ref: '#/components/responses/InvalidToken' 
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+          
+  '/categories':
+    get:
+      tags:
+        - categories
+      summary: User view categories
+      description: View categories of user
+      operationId: getSelfCategories
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken' 
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+          
+  '/category/{category_id}':
+    put:
+      tags:
+        - categories
+      summary: User view categories
+      description: View categories of user
+      operationId: getCategoryById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category_id
+          in: path
+          description: Category id for updating. Use XXXX for testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken' 
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'   
+          
+  '/category':
+    post:
+      tags:
+        - categories
+      summary: Add new category
+      description: Add new category of user
+      operationId: addNewCategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Category object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCategory'
+        required: true  
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                    format: int32
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/InvalidToken' 
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+
+components:
+  responses:
+    InvalidToken:
+      description: Invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    AddUser:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+    GetUser:
+      type: object
+      properties:
+        user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    AddCategory:
+      type: object
+      properties:
+        category:
+          type: string
+    Category:
+      type: object
+      properties:
+        category_id:
+          type: string
+        category:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    AdminAction:
+      type: object
+      properties:
+        action_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    AddPost:
+      type: object
+      properties:
+        images:
+          type: array
+          items: 
+            type: object
+        list:
+          type: array
+          items:
+            type: string
+        category_id: 
+          type: string    
+        state:
+          type: string
+        link:
+          type: string      
+    Post:
+      type: object
+      properties:
+        post_id:
+          type: string
+        images:
+          type: array
+          items: 
+            type: string
+        list:
+          type: array
+          items:
+            type: string
+        state:
+          type: string
+        link:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

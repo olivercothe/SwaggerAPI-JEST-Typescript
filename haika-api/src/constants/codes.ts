@@ -1,0 +1,18 @@
+/**
+ * Http response code
+ */
+const codes = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  INVALID_AUTH_TOKEN: 401,
+  FORBIDDEN: 403,
+  RESOURCE_NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+  INVALID_INPUT_PARAMS: 501,
+  DATABASE_QUERY_ERROR: 502,
+  SERVICE_UNAVAILABLE: 503,
+}
+
+
+export default codes
